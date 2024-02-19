@@ -44,6 +44,9 @@ if st.button('Submit'):
     # Store user input in session state
     st.session_state.user_input = user_input
 
+# Load user data
+user_data = load_user_data()
+
 # Display user data
 st.write("User Data:")
 st.write(user_data)
@@ -55,6 +58,7 @@ if not user_data.empty:
 
     st.write(f"Number of people feeling better than their OK level: {num_better_than_ok}")
     st.write(f"Number of people feeling worse than their OK level: {num_worse_than_ok}")
+
 
 # Button to restart for a new user
 if st.button('Restart for a New User'):
