@@ -1,6 +1,7 @@
 import streamlit as st
-from datetime import datetime
 import pandas as pd
+from datetime import datetime
+import plotly.express as px
 
 # Function to save data to a file
 def save_data(user_name, user_mood, user_data):
@@ -41,3 +42,7 @@ st.subheader('Compiled data:')
 save_data(user_name, user_mood, user_data)
 compiled_data = pd.read_csv('user_data.csv')
 st.write(compiled_data)
+
+# Line chart for mood over time
+fig = px.line(compiled_data, x='Date', y='Mood', title='User Mood Over Time')
+st.plotly_chart(fig)
