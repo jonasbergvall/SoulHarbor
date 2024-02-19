@@ -22,7 +22,8 @@ if st.button("Save"):
 
 # Display average mood
 average_mood = st.session_state.user_data['Mood'].map(mood_options.index).mean()
-st.write(f"Average Mood: {mood_options[round(average_mood)]}")
+st.write(f"Average Mood: {mood_options[int(round(average_mood))]}")
+
 
 # Display user data table
 st.write("User Data:")
