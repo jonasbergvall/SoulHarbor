@@ -1,9 +1,22 @@
 import streamlit as st
 import pandas as pd
 
+@st.cache(allow_output_mutation=True)
+def load_user_data():
+    try:
+        user_data = pd.read_csv('user_data.csv')
+    except FileNotFoundError:
+        user_data = pd.DataFrame(columns=['Mood', 'OK_Level', 'Input'])
+    return user_data
+
+@st.cache(allow_output_mutation=True)
+def save_user_data(new_entry, user_data):
+    user_data = pd.concat([user_data, pd.DataFrame([new_entry])], ignore_index=True)
+    user_data.to_csv('user_data.csv', index=False)
+    return user_data
+
 # Initialize session state
-if 'user_data' not in st.session_state:
-    st.session_state.user_data = pd.DataFrame(columns=['Mood', 'OK_Level', 'Input'])
+user_data = load_user_data()
 
 # Mood options
 mood_options = ['Very Bad', 'Bad', 'Neutral', 'Good', 'Excellent']
@@ -21,16 +34,16 @@ user_input = st.text_area("Describe your day:")
 # Button to submit data
 if st.button('Submit'):
     new_entry = {'Mood': user_mood, 'OK_Level': user_ok_level, 'Input': user_input}
-    st.session_state.user_data = pd.concat([st.session_state.user_data, pd.DataFrame([new_entry])], ignore_index=True)
+    user_data = save_user_data(new_entry, user_data)
 
 # Display user data
 st.write("User Data:")
-st.write(st.session_state.user_data)
+st.write(user_data)
 
 # Calculate and display statistics
-if not st.session_state.user_data.empty:
-    num_better_than_ok = st.session_state.user_data[st.session_state.user_data['Mood'] > st.session_state.user_data['OK_Level']].shape[0]
-    num_worse_than_ok = st.session_state.user_data[st.session_state.user_data['Mood'] < st.session_state.user_data['OK_Level']].shape[0]
+if not user_data.empty:
+    num_better_than_ok = user_data[user_data['Mood'] > user_data['OK_Level']].shape[0]
+    num_worse_than_ok = user_data[user_data['Mood'] < user_data['OK_Level']].shape[0]
 
     st.write(f"Number of people feeling better than their OK level: {num_better_than_ok}")
     st.write(f"Number of people feeling worse than their OK level: {num_worse_than_ok}")
