@@ -1,8 +1,9 @@
 import streamlit as st
 import pandas as pd
-import csv 
+import csv
 from datetime import date
 import plotly.express as px
+import plotly.graph_objects as go
 
 st.title('WhistlePeep')
 
@@ -12,25 +13,31 @@ note = st.text_input('Notes:')
 
 if st.button('Save'):
 
-  today = date.today().strftime('%Y-%m-%d')
-  data = [today, sentiment, ok_level, note]  
+  today = date.today().strftime('%Y-%m-%d')  
+  data = [today, sentiment, ok_level, note]
 
   with open('data.csv', 'a') as f:
     writer = csv.writer(f)
     writer.writerow(data)
-
+    
   st.success('Data saved!')
 
 df = pd.read_csv('data.csv', names=['Date', 'Sentiment', 'OK level', 'Notes'])
 
 if len(df) > 0:
 
-  # Create px figure
-  fig = px.line(...)
+  today = date.today().strftime('%Y-%m-%d')
+
+  df['Gap'] = df['OK level'] - df['Sentiment'].map({'Very bad':1, 'Bad':2, 'Neutral':3, 'Good':4, 'Very good':5})  
+
+  fig = px.line(data_frame=df, x='Date', y='Gap', title='Mood Gap Timeline')
+
+  fig.add_scatter(x=df['Date'], y=[df['Gap'].median()], name='Median')
+
+  fig.add_scatter(x=[today], y=[df['Gap'].iloc[-1]], mode='markers', name='You')
 
 else:
-
-  # Use Plotly Graph Objects
+  
   fig = go.Figure()
   fig.update_layout(title='No Data')
 
