@@ -3,14 +3,19 @@ import pandas as pd
 import datetime
 import plotly.express as px
 
-def save_user_data(new_entry):
-    user_data = st.session_state.user_data
-    user_data = user_data.append(new_entry, ignore_index=True)
-    user_data.to_csv('user_data.csv', index=False)
-    st.session_state.user_data = pd.read_csv('user_data.csv')
+def get_user_data():
+    if 'user_data' not in st.session_state:
+        st.session_state.user_data = None
     return st.session_state.user_data
 
-# rest of your code...
+def save_user_data(new_entry):
+    user_data = get_user_data()
+    if user_data is None:
+        user_data = pd.DataFrame(columns=['Date', 'Mood'])
+    user_data = user_data.append(new_entry, ignore_index=True)
+    st.session_state.user_data = user_data
+    return user_data
+
 
 
 
