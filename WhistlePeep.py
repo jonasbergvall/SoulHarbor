@@ -4,12 +4,17 @@ import datetime
 
 # Function to save user data
 def save_user_data(new_entry):
-    user_data = pd.read_csv('user_data.csv') if 'user_data' in st.session_state else pd.DataFrame(columns=['Date', 'Mood'])
+    try:
+        user_data = pd.read_csv('user_data.csv') if 'user_data' in st.session_state else pd.DataFrame(columns=['Date', 'Mood'])
+    except FileNotFoundError:
+        user_data = pd.DataFrame(columns=['Date', 'Mood'])
+
     user_data = user_data.append(new_entry, ignore_index=True)
     user_data.to_csv('user_data.csv', index=False)
     st.session_state.user_data = user_data
     st.session_state.data_loaded = True  # New line to indicate data has been loaded
     return user_data
+
 
 # Main function
 def main():
