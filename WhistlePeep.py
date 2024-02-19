@@ -18,16 +18,16 @@ def save_user_data(new_entry):
     return user_data
 
 # Function to display statistics
-def display_statistics():
+def display_statistics(user_data):
     st.write("## User Data")
-    st.write(st.session_state.user_data)
+    st.write(user_data)
 
     # Calculate and display statistics
-    if st.session_state.user_data is not None:
+    if user_data is not None:
         st.write("## Statistics")
-        total_users = len(st.session_state.user_data)
-        positive_mood_users = len(st.session_state.user_data[st.session_state.user_data['Mood_Difference'] > 0])
-        negative_mood_users = len(st.session_state.user_data[st.session_state.user_data['Mood_Difference'] < 0])
+        total_users = len(user_data)
+        positive_mood_users = len(user_data[user_data['Mood_Difference'] > 0])
+        negative_mood_users = len(user_data[user_data['Mood_Difference'] < 0])
 
         st.write(f"Total Users: {total_users}")
         st.write(f"Users with Positive Mood Difference: {positive_mood_users}")
@@ -58,7 +58,7 @@ def main():
         st.success("Data saved successfully!")
 
     # Display statistics
-    display_statistics()
+    display_statistics(st.session_state.user_data)
 
     # Restart button
     if st.button("Restart for a new user"):
