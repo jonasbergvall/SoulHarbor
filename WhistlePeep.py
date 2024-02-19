@@ -3,10 +3,10 @@ import pandas as pd
 import datetime
 
 # Function to save user data
-@st.cache(allow_output_mutation=True)
 def save_user_data(new_entry, user_data):
-    user_data = user_data.append(new_entry, ignore_index=True)
+    user_data = pd.concat([user_data, pd.DataFrame([new_entry])], ignore_index=True)
     return user_data
+
 
 # Main function
 def main():
