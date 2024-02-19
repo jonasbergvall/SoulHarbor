@@ -1,43 +1,50 @@
 import streamlit as st
-import datetime
+import pandas as pd
+import plotly.express as px
+
+# Function to get user location (you can replace this with your geolocation logic)
+def get_user_location():
+    # Mocking location data for demonstration purposes
+    return {'latitude': 37.7749, 'longitude': -122.4194}
 
 # Function to save user data
 def save_user_data():
-    user_name = st.text_input("Your Name:")
-    user_mood = st.slider("How is your mood today?", 0, 100, 50)
-    user_data_input = st.text_area("Write something about your day:")
+    # Get user input
+    user_name = st.text_input("Your Name")
+    user_mood = st.slider("How's your mood today?", 0, 100, 50)
+    user_text = st.text_area("Write something about your day")
 
-    # Save data if all inputs are provided
-    if user_name and user_mood is not None and user_data_input:
-        current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-        # Save user data
-        user_entry = {
-            "Name": user_name,
-            "Mood": user_mood,
-            "Data": user_data_input,
-            "Time": current_time
-        }
-
-        # Display success message
-        st.success("Data saved successfully!")
-
-        return user_entry
-    else:
-        st.warning("Please fill in all the required information.")
-        return None
-
-# Main app
-def main():
-    st.title("WhistlePeep - Your Mood Tracker")
-    st.write("Welcome to WhistlePeep! Track your mood and share your thoughts.")
-
-    user_data = save_user_data()
+    # Get user location (mocked for demonstration)
+    user_location = get_user_location()
 
     # Display user data
-    if user_data:
-        st.subheader("User Data:")
-        st.write(user_data)
+    st.write("### User Data:")
+    st.write(f"Name: {user_name}")
+    st.write(f"Mood: {user_mood}")
+    st.write(f"Text: {user_text}")
+    st.write(f"Location: {user_location}")
 
-if __name__ == "__main__":
-    main()
+    # Save user data to a DataFrame
+    user_data = pd.DataFrame({
+        'Name': [user_name],
+        'Mood': [user_mood],
+        'Text': [user_text],
+        'Latitude': [user_location['latitude']],
+        'Longitude': [user_location['longitude']]
+    })
+
+    # Append user data to a CSV file
+    user_data.to_csv('user_data.csv', mode='a', header=not st.session_state.data_loaded, index=False)
+    st.session_state.data_loaded = True
+
+    # Display the data
+    st.write("### Compiled Data:")
+    st.write(user_data)
+
+    # Display a chart using Plotly Express
+    fig = px.line(user_data, x='Name', y='Mood', title='User Mood Over Time')
+    st.plotly_chart(fig)
+
+# Run the save_user_data function when the 'Analyze' button is clicked
+if st.button('Analyze'):
+    save_user_data()
