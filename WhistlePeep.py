@@ -1,74 +1,31 @@
-import pandas as pd
 import streamlit as st
-import datetime
+import pandas as pd
+from datetime import date
 
-# Function to save user data
-def save_user_data(new_entry):
-    user_data = st.session_state.get('user_data', None)
+# Initialize variables
+data = pd.DataFrame(columns=['Date', 'Sentiment', 'OK level'])
 
-    if user_data is None:
-        user_data = pd.DataFrame(columns=['Date', 'Mood', 'OK_Level', 'Mood_Difference', 'Description'])
+st.title('WhistlePeep') 
 
-    # Calculate Mood_Difference
-    mood_difference = new_entry['Mood'] - new_entry['OK_Level']
-    new_entry['Mood_Difference'] = mood_difference
+# Get user input
+sentiment = st.selectbox('How is your day today?', ['Very bad', 'Bad', 'Neutral', 'Good', 'Very good'])
 
-    # Append the new entry to the user_data
-    user_data = pd.concat([user_data, pd.DataFrame([new_entry])], ignore_index=True)
+ok_level = st.slider('Set your OK level', min_value=1, max_value=5, step=1)
 
-    # Save the user_data in session_state
-    st.session_state.user_data = user_data
+# Save data
+if st.button('Save'):
+    today = date.today().strftime('%Y-%m-%d')
+    new_data = pd.DataFrame({'Date': [today], 'Sentiment': [sentiment], 'OK level': [ok_level]})
+    data = data.append(new_data, ignore_index=True)
+    st.success('Data saved!')
 
-    return user_data
-
-# Function to display statistics
-def display_statistics():
-    user_data = st.session_state.get('user_data', None)
-
-    st.write("## User Data")
-    st.write(user_data)
-
-    # Calculate and display statistics
-    if user_data is not None:
-        total_users = len(user_data)
-        positive_mood_users = len(user_data[user_data['Mood_Difference'] > 0])
-        negative_mood_users = len(user_data[user_data['Mood_Difference'] < 0])
-
-        st.write("## Statistics")
-        st.write(f"Total Users: {total_users}")
-        st.write(f"Users with Positive Mood Difference: {positive_mood_users}")
-        st.write(f"Users with Negative Mood Difference: {negative_mood_users}")
-
-# Main function
-def main():
-    st.title("WhistlePeep")
-
-    # User input section
-    st.write("## How do you feel today?")
-    mood_options = ['Very Bad', 'Bad', 'Neutral', 'Good', 'Very Good']
-    user_mood = st.selectbox("Select your mood:", mood_options)
-
-    ok_level = st.slider("What is your OK level?", min_value=0, max_value=100, value=50)
-
-    description = st.text_area("Describe your day:")
-
-    new_entry = {
-        'Date': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        'Mood': mood_options.index(user_mood) + 1,
-        'OK_Level': ok_level,
-        'Description': description
-    }
-
-    if st.button("Save"):
-        user_data = save_user_data(new_entry)
-        st.success("Data saved successfully!")
-
-    # Display statistics
-    display_statistics()
-
-    # Restart button
-    if st.button("Restart for a new user"):
-        st.session_state.user_data = None
-
-if __name__ == "__main__":
-    main()
+# Show pivot chart  
+if not data.empty:
+   avg = data.pivot_table(index='OK level', values='Date', aggfunc='count').reset_index()
+   st.bar_chart(avg, x='OK level', y='Date')
+   
+# Reset app
+if st.button('Done'):
+    data = pd.DataFrame(columns=['Date', 'Sentiment', 'OK level']) 
+    st.legacy_caching.clear_cache()
+    st.write('App reset')
