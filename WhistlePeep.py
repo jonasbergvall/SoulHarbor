@@ -21,7 +21,7 @@ user_input = st.text_area("Describe your day:")
 # Button to submit data
 if st.button('Submit'):
     new_entry = {'Mood': user_mood, 'OK_Level': user_ok_level, 'Input': user_input}
-    st.session_state.user_data = st.session_state.user_data.append(new_entry, ignore_index=True).copy()
+    st.session_state.user_data = pd.concat([st.session_state.user_data, pd.DataFrame([new_entry])], ignore_index=True)
 
 # Display user data
 st.write("User Data:")
