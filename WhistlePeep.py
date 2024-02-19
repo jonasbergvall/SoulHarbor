@@ -1,19 +1,24 @@
-import streamlit as st
 import pandas as pd
-import datetime
-
-# Define mood options
-mood_options = ["Very Bad", "Bad", "Neutral", "Good", "Very Good"]
+import streamlit as st
 
 # Function to save user data
 def save_user_data(new_entry):
     user_data = st.session_state.user_data
     if user_data is None:
-        user_data = pd.DataFrame(columns=['Date', 'Mood', 'OK_Level', 'Description'])
+        user_data = pd.DataFrame(columns=['Date', 'Mood', 'OK_Level', 'Mood_Difference', 'Description'])
 
+    # Calculate Mood_Difference
+    mood_difference = new_entry['Mood'] - new_entry['OK_Level']
+    new_entry['Mood_Difference'] = mood_difference
+
+    # Append the new entry to the user_data
     user_data = pd.concat([user_data, pd.DataFrame([new_entry])], ignore_index=True)
+
+    # Update session state
     st.session_state.user_data = user_data
+
     return user_data
+
 
 
 # Main function
