@@ -11,7 +11,9 @@ def get_user_location():
 def save_user_data(new_entry):
     user_data = st.session_state.user_data.copy()
     user_data = user_data.append(new_entry, ignore_index=True)
+    st.session_state.user_data = user_data
     return user_data
+
 
 # Main Streamlit app
 def main():
