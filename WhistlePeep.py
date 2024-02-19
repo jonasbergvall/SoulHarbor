@@ -51,3 +51,8 @@ if not user_data.empty:
 
     st.write(f"Number of people feeling better than their OK level: {num_better_than_ok}")
     st.write(f"Number of people feeling worse than their OK level: {num_worse_than_ok}")
+
+# Button to restart for a new user
+if st.button('Restart for a New User'):
+    st.session_state.user_data = None
+    st.experimental_rerun()
