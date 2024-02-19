@@ -24,9 +24,13 @@ mood_options = ['Very Bad', 'Bad', 'Neutral', 'Good', 'Excellent']
 # OK level options
 ok_level_options = ['Very Bad', 'Bad', 'Neutral', 'Good', 'Excellent']
 
+# Assign numerical values to mood and OK levels
+mood_values = {'Very Bad': 1, 'Bad': 2, 'Neutral': 3, 'Good': 4, 'Excellent': 5}
+ok_level_values = {'Very Bad': 1, 'Bad': 2, 'Neutral': 3, 'Good': 4, 'Excellent': 5}
+
 # Sidebar for user input
-user_mood = st.sidebar.selectbox('How is your mood today?', mood_options)
-user_ok_level = st.sidebar.selectbox('What is your OK level?', ok_level_options)
+user_mood = st.sidebar.selectbox('How is your mood today?', mood_options, format_func=lambda x: mood_values[x])
+user_ok_level = st.sidebar.selectbox('What is your OK level?', ok_level_options, format_func=lambda x: ok_level_values[x])
 
 # Text input for describing the day
 user_input = st.text_area("Describe your day:")
