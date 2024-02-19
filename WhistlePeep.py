@@ -3,7 +3,6 @@ import streamlit as st
 import datetime
 
 # Function to save user data
-@st.cache(allow_output_mutation=True)
 def save_user_data(new_entry):
     user_data = st.session_state.user_data
     if user_data is None:
