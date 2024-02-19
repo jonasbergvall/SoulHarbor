@@ -3,8 +3,9 @@ import streamlit as st
 import datetime
 
 # Function to save user data
-@st.cache(allow_output_mutation=True)
-def save_user_data(new_entry, user_data):
+def save_user_data(new_entry):
+    user_data = st.session_state.get('user_data', None)
+
     if user_data is None:
         user_data = pd.DataFrame(columns=['Date', 'Mood', 'OK_Level', 'Mood_Difference', 'Description'])
 
@@ -15,29 +16,28 @@ def save_user_data(new_entry, user_data):
     # Append the new entry to the user_data
     user_data = pd.concat([user_data, pd.DataFrame([new_entry])], ignore_index=True)
 
+    # Save the user_data in session_state
+    st.session_state.user_data = user_data
+
     return user_data
 
 # Function to display statistics
-@st.cache(allow_output_mutation=True)
-def calculate_statistics(user_data):
-    total_users = len(user_data) if user_data is not None else 0
-    positive_mood_users = len(user_data[user_data['Mood_Difference'] > 0]) if user_data is not None else 0
-    negative_mood_users = len(user_data[user_data['Mood_Difference'] < 0]) if user_data is not None else 0
+def display_statistics():
+    user_data = st.session_state.get('user_data', None)
 
-    return total_users, positive_mood_users, negative_mood_users
-
-# Function to display statistics
-def display_statistics(user_data):
     st.write("## User Data")
     st.write(user_data)
 
     # Calculate and display statistics
-    total_users, positive_mood_users, negative_mood_users = calculate_statistics(user_data)
+    if user_data is not None:
+        total_users = len(user_data)
+        positive_mood_users = len(user_data[user_data['Mood_Difference'] > 0])
+        negative_mood_users = len(user_data[user_data['Mood_Difference'] < 0])
 
-    st.write("## Statistics")
-    st.write(f"Total Users: {total_users}")
-    st.write(f"Users with Positive Mood Difference: {positive_mood_users}")
-    st.write(f"Users with Negative Mood Difference: {negative_mood_users}")
+        st.write("## Statistics")
+        st.write(f"Total Users: {total_users}")
+        st.write(f"Users with Positive Mood Difference: {positive_mood_users}")
+        st.write(f"Users with Negative Mood Difference: {negative_mood_users}")
 
 # Main function
 def main():
@@ -60,11 +60,11 @@ def main():
     }
 
     if st.button("Save"):
-        st.session_state.user_data = save_user_data(new_entry, st.session_state.user_data)
+        user_data = save_user_data(new_entry)
         st.success("Data saved successfully!")
 
     # Display statistics
-    display_statistics(st.session_state.user_data)
+    display_statistics()
 
     # Restart button
     if st.button("Restart for a new user"):
