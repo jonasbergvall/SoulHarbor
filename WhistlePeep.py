@@ -30,7 +30,11 @@ def save_user_data():
 if 'user_data' in st.session_state and st.session_state.user_data:
     st.write("User Data Chart:")
     df_user_data = pd.DataFrame(st.session_state.user_data)
-    st.line_chart(df_user_data.set_index('Date')['Mood'])
+    st.line_chart(df_user_data.set_index('Date')['Mood'], use_container_width=True).set_ylim(0, 100)
 
 # Save user data
 save_user_data()
+
+# Button to start a new entry
+if st.button("New Entry"):
+    st.session_state.sync()  # Sync session state to clear previous data
