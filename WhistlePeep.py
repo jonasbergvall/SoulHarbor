@@ -10,7 +10,7 @@ def get_user_location():
 @st.cache(allow_output_mutation=True)
 def save_user_data(new_entry, user_data):
     user_data = user_data.append(new_entry, ignore_index=True)
-    return user_data
+    return user_data.copy()
 
 # Main Streamlit app
 def main():
