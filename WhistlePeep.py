@@ -11,9 +11,10 @@ def save_user_data(new_entry):
     if user_data is None:
         user_data = pd.DataFrame(columns=['Date', 'Mood', 'OK_Level', 'Description'])
 
-    user_data = user_data.append(new_entry, ignore_index=True)
+    user_data = pd.concat([user_data, pd.DataFrame([new_entry])], ignore_index=True)
     st.session_state.user_data = user_data
     return user_data
+
 
 # Main function
 def main():
