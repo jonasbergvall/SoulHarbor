@@ -6,11 +6,13 @@ import datetime
 mood_options = ["Very Bad", "Bad", "Neutral", "Good", "Very Good"]
 
 # Function to save user data
-def save_user_data(new_entry, user_data):
+def save_user_data(new_entry):
+    user_data = st.session_state.user_data
     if user_data is None:
         user_data = pd.DataFrame(columns=['Date', 'Mood', 'OK_Level', 'Description'])
 
     user_data = user_data.append(new_entry, ignore_index=True)
+    st.session_state.user_data = user_data
     return user_data
 
 # Main function
@@ -42,7 +44,7 @@ def main():
         }
 
         # Save user data
-        st.session_state.user_data = save_user_data(new_entry, st.session_state.user_data)
+        save_user_data(new_entry)
         st.success("Data saved successfully!")
 
     # Display user data
