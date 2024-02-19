@@ -1,60 +1,60 @@
 import streamlit as st
-import plotly.express as px
-import pandas as pd
 import datetime
 
 # Function to get user geolocation
 def get_user_location():
-    location = st.session_state.location
-    if not location:
+    try:
+        location = st.session_state.location
+        if not location:
+            st.warning("Geolocation not available. Please make sure to enable location access in your browser.")
+            return None
+        return location
+    except AttributeError:
         st.warning("Geolocation not available. Please make sure to enable location access in your browser.")
         return None
-    return location
 
 # Function to save user data
 def save_user_data():
-    user_name = st.session_state.user_name
-    user_mood = st.slider("How's your mood today?", 0, 100, 50)
-    user_text = st.text_area("Write something about your day")
+    user_name = st.text_input("Your Name:")
+    user_mood = st.slider("How is your mood today?", 0, 100, 50)
+    user_data_input = st.text_area("Write something about your day:")
+    
+    # Get user location
     user_location = get_user_location()
 
-    # Get current date and time
-    current_datetime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    # Save data if all inputs are provided
+    if user_name and user_mood is not None and user_data_input and user_location:
+        # Save data to session state
+        if not hasattr(st.session_state, 'user_data'):
+            st.session_state.user_data = []
 
-    # Save data to session_state
-    if 'user_data' not in st.session_state:
-        st.session_state.user_data = pd.DataFrame(columns=["Date", "Time", "User Name", "Mood", "Text", "Location"])
+        current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    st.session_state.user_data = st.session_state.user_data.append({
-        "Date": current_datetime.split()[0],
-        "Time": current_datetime.split()[1],
-        "User Name": user_name,
-        "Mood": user_mood,
-        "Text": user_text,
-        "Location": user_location
-    }, ignore_index=True)
+        # Save user data
+        user_entry = {
+            "Name": user_name,
+            "Mood": user_mood,
+            "Data": user_data_input,
+            "Location": user_location,
+            "Time": current_time
+        }
 
-# Load saved user data
-if 'user_data' not in st.session_state:
-    st.session_state.user_data = pd.DataFrame(columns=["Date", "Time", "User Name", "Mood", "Text", "Location"])
+        st.session_state.user_data.append(user_entry)
+
+        # Display success message
+        st.success("Data saved successfully!")
 
 # Main app
-st.title("WhistlePeep - Your Mood Tracker")
+def main():
+    st.title("WhistlePeep - Your Mood Tracker")
+    st.write("Welcome to WhistlePeep! Track your mood and share your thoughts.")
 
-# User input
-st.session_state.user_name = st.text_input("Enter your name:")
-save_button = st.button("Save my data")
-
-# Save data when the "Save my data" button is clicked
-if save_button:
     save_user_data()
 
-# Display saved data
-if not st.session_state.user_data.empty:
-    st.subheader("Your Saved Data:")
-    st.write(st.session_state.user_data)
+    # Display user data
+    if hasattr(st.session_state, 'user_data') and st.session_state.user_data:
+        st.subheader("User Data:")
+        st.write(st.session_state.user_data)
 
-# Plot mood over time
-if st.checkbox("Show Mood Over Time"):
-    fig = px.line(st.session_state.user_data, x="Date", y="Mood", title="Mood Over Time", markers=True)
-    st.plotly_chart(fig)
+if __name__ == "__main__":
+    main()
