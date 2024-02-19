@@ -16,7 +16,7 @@ def save_user_data(new_entry):
         st.session_state.user_data = pd.DataFrame(columns=['Date', 'Mood', 'Location'])
 
     # Append new entry to user_data
-    st.session_state.user_data = st.session_state.user_data.append(new_entry, ignore_index=True)
+    st.session_state.user_data = st.session_state.user_data.append(pd.Series(new_entry), ignore_index=True)
 
 # Main Streamlit app
 def main():
