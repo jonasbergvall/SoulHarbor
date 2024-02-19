@@ -1,7 +1,10 @@
 import streamlit as st
 import pandas as pd
 import datetime
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+
 
 # Function to save user data
 @st.cache(allow_output_mutation=True)
