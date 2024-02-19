@@ -1,9 +1,11 @@
 import streamlit as st
 import pandas as pd
 import datetime
+from matplotlib.backends.backend_agg import RendererAgg
 import matplotlib
-matplotlib.use('Agg')
+matplotlib.use('agg')
 import matplotlib.pyplot as plt
+
 
 
 # Function to save user data
