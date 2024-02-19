@@ -31,17 +31,15 @@ if 'user_data' in st.session_state and st.session_state.user_data:
     st.write("User Data Chart:")
     df_user_data = pd.DataFrame(st.session_state.user_data)
     
-    # Create a Matplotlib figure
-    fig, ax = plt.subplots()
-    
+    # Create a Matplotlib figure using Streamlit
+    fig, ax = st.pyplot()
+
     # Plot the data
     ax.plot(df_user_data.set_index('Date')['Mood'])
     
     # Set y-axis limits
     ax.set_ylim(0, 100)
 
-    # Display the plot using Streamlit
-    st.pyplot(fig)
 
 
 
