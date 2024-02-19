@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 
-@st.cache_data(allow_output_mutation=True)
+@st.cache(allow_output_mutation=True)
 def load_user_data():
     try:
         user_data = pd.read_csv('user_data.csv')
@@ -9,7 +9,7 @@ def load_user_data():
         user_data = pd.DataFrame(columns=['Mood', 'OK_Level', 'Input'])
     return user_data
 
-@st.cache_data(allow_output_mutation=True)
+@st.cache(allow_output_mutation=True)
 def save_user_data(new_entry, user_data):
     user_data = pd.concat([user_data, pd.DataFrame([new_entry])], ignore_index=True)
     user_data.to_csv('user_data.csv', index=False)
