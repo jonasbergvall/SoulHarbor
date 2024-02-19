@@ -1,12 +1,6 @@
 import streamlit as st
 import pandas as pd
 import datetime
-import matplotlib
-from matplotlib.backends.backend_agg import RendererAgg
-
-# Initialize the RendererAgg for Matplotlib
-matplotlib.use("agg")
-_lock = RendererAgg.lock
 
 # Function to save user data
 @st.cache(allow_output_mutation=True)
@@ -31,20 +25,15 @@ def main():
     new_entry = {'User': user_name, 'Mood': user_mood, 'Input': user_input}
 
     # Save user data
-    with _lock:
-        st.session_state.user_data = save_user_data(new_entry, st.session_state.user_data)
+    st.session_state.user_data = save_user_data(new_entry, st.session_state.user_data)
 
     # Display user data
     st.write("User Data:")
     st.write(st.session_state.user_data)
 
-    # Plot user mood over time
+    # Plot user mood over time using area chart
     st.write("User Mood Over Time:")
-    with _lock:
-        fig, ax = matplotlib.pyplot.subplots()
-        ax.plot(st.session_state.user_data['Date'], st.session_state.user_data['Mood'])
-        ax.set_ylim(0, 100)
-        st.pyplot(fig)
+    st.area_chart(st.session_state.user_data.set_index('Date')['Mood'], use_container_width=True)
 
 # Run the app
 if __name__ == "__main__":
