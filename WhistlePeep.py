@@ -47,3 +47,7 @@ if 'user_data' in st.session_state and st.session_state.user_data:
 
     # Show the figure
     st.plotly_chart(fig)
+
+# Button to clear data for a new entry
+if st.button("New Entry"):
+    st.session_state.user_data = []
