@@ -1,55 +1,49 @@
+# Import necessary libraries
 import streamlit as st
 import pandas as pd
-import plotly.express as px
+import datetime
 
-# Function to get user location (if available)
+# Function to get user location
 def get_user_location():
-    # Replace this with your geolocation logic
-    return {"latitude": 0, "longitude": 0}
+    # Implement the logic to get the user's location
+    # For simplicity, let's return a dummy location
+    return {"latitude": 0.0, "longitude": 0.0}
 
 # Function to save user data
-@st.cache_data(allow_output_mutation=True)
-def save_user_data(user_data, new_entry):
-    user_data.append(new_entry)
-    return user_data
-
-
-# Set user name and date
-user_name = st.text_input("User Name:")
-date = st.date_input("Date:")
-
-# Set user mood using a slider
-user_mood = st.slider("How was your day?", 0, 100, 50)
-
-# Save user data on button click
-if st.button("Analyze"):
-    new_entry = {
-        "User": user_name,
-        "Date": date,
-        "Mood": user_mood,
-        "Location": get_user_location(),
-    }
-
-    # Load existing user data
-    user_data = st.session_state.user_data if 'user_data' in st.session_state else []
+def save_user_data(new_entry):
+    # Check if user_data key exists in session_state
+    if 'user_data' not in st.session_state:
+        st.session_state.user_data = pd.DataFrame(columns=['Date', 'Mood', 'Location'])
 
     # Append new entry to user_data
-    save_user_data(user_data, new_entry)
-    st.session_state.user_data = user_data
+    st.session_state.user_data = st.session_state.user_data.append(new_entry, ignore_index=True)
 
-# Display user data chart
-if 'user_data' in st.session_state and st.session_state.user_data:
-    st.write("User Data Chart:")
+# Main Streamlit app
+def main():
+    st.title("WhistlePeep - Employee Well-being Tracker")
 
-    # Create a Plotly figure
-    fig = px.line(st.session_state.user_data, x='Date', y='Mood', color='User', labels={'Mood': 'User Mood'})
+    # Get user name
+    user_name = st.text_input("Enter your name:")
 
-    # Set y-axis limits
-    fig.update_yaxes(range=[0, 100])
+    # Get user mood
+    user_mood = st.slider("How is your mood today?", 0, 100, 50)
 
-    # Show the figure
-    st.plotly_chart(fig)
+    # Get user location (dummy data for illustration purposes)
+    user_location = get_user_location()
 
-# Button to clear data for a new entry
-if st.button("New Entry"):
-    st.session_state.user_data = []
+    # Create a new entry
+    new_entry = {'Date': datetime.datetime.now(), 'Mood': user_mood, 'Location': user_location}
+
+    # Save user data
+    save_user_data(new_entry)
+
+    # Display user data
+    st.write("User Data:")
+    st.write(st.session_state.user_data)
+
+    # Display mood chart
+    st.line_chart(st.session_state.user_data.set_index('Date')['Mood'], use_container_width=True).set_ylim(0, 100)
+
+# Run the app
+if __name__ == "__main__":
+    main()
