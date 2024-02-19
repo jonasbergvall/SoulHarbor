@@ -4,41 +4,37 @@ import datetime
 
 # Function to save user data
 @st.cache(allow_output_mutation=True)
-def save_user_data(new_entry, user_data=None):
-    if user_data is None:
-        user_data = pd.DataFrame(columns=['Date', 'Mood'])
-
-    new_entry['Date'] = datetime.datetime.now()
+def save_user_data(new_entry, user_data):
     user_data = user_data.append(new_entry, ignore_index=True)
     return user_data
 
 # Main function
 def main():
     st.title("WhistlePeep App")
-    
-    # Initialize session state if not exists
-    if 'user_data' not in st.session_state:
-        st.session_state.user_data = pd.DataFrame(columns=['Date', 'Mood'])
 
-    # Get user input
+    # User input
     user_name = st.text_input("Enter your name:")
     user_mood = st.slider("Select your mood:", 0, 100, 50)
     user_input = st.text_area("Share your thoughts:")
 
-    # Create a new entry
-    new_entry = {'User': user_name, 'Mood': user_mood, 'Input': user_input}
+    # Save user data on button click
+    if st.button("Save Entry"):
+        new_entry = {'Date': datetime.datetime.now(), 'Mood': user_mood, 'User': user_name, 'Input': user_input}
+        st.session_state.user_data = save_user_data(new_entry, st.session_state.user_data)
+        st.success("Entry saved successfully!")
 
-    # Save user data
-    st.session_state.user_data = save_user_data(new_entry, st.session_state.user_data)
-
-    # Display user data
-    st.write("User Data:")
+    # Display user data in a table
+    st.subheader("Your Entries:")
     st.write(st.session_state.user_data)
 
-    # Plot user mood over time using area chart
-    st.write("User Mood Over Time:")
-    st.area_chart(st.session_state.user_data.set_index('Date')['Mood'], use_container_width=True)
+    # Display mood over time using area chart
+    if not st.session_state.user_data.empty:
+        st.subheader("Mood Over Time")
+        st.area_chart(st.session_state.user_data.set_index('Date')['Mood'], use_container_width=True).set_ylim(0, 100)
 
-# Run the app
 if __name__ == "__main__":
+    # Check if 'user_data' is in session state, initialize if not
+    if 'user_data' not in st.session_state:
+        st.session_state.user_data = pd.DataFrame(columns=['Date', 'Mood', 'User', 'Input'])
+
     main()
