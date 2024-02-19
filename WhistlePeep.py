@@ -1,13 +1,10 @@
-# Import necessary libraries
 import streamlit as st
 import pandas as pd
 import datetime
 
-# Function to get user location
+# Function to get user location (dummy data for illustration purposes)
 def get_user_location():
-    # Implement the logic to get the user's location
-    # For simplicity, let's return a dummy location
-    return {"latitude": 0.0, "longitude": 0.0}
+    return "Dummy Location"
 
 # Function to save user data
 def save_user_data(new_entry):
