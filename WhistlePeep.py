@@ -1,56 +1,48 @@
 import streamlit as st
-import datetime
+import pandas as pd
+from datetime import datetime
+import plotly.express as px
 
-# Function to get user geolocation
-def get_user_location():
+# Function to save data to a file
+def save_data(user_name, user_mood, user_data):
+    # Read existing data from the file if it exists
     try:
-        return st.session_state.location
-    except AttributeError:
-        st.warning("Geolocation not available. Please make sure to enable location access in your browser.")
-        return None
+        existing_data = pd.read_csv('user_data.csv')
+    except FileNotFoundError:
+        existing_data = pd.DataFrame(columns=['Date', 'User Name', 'Mood', 'User Data'])
 
-# Function to save user data
-def save_user_data():
-    user_name = st.text_input("Your Name:")
-    user_mood = st.slider("How is your mood today?", 0, 100, 50)
-    user_data_input = st.text_area("Write something about your day:")
-    
-    # Get user location
-    user_location = get_user_location()
+    # Add new data only if the user clicked on Analyze
+    if st.button('Analyze'):
+        # Automatic identification of the current date and time
+        current_date_time = datetime.now()
+        formatted_date_time = current_date_time.strftime("%Y-%m-%d %H:%M:%S")
 
-    # Save data if all inputs are provided
-    if user_name and user_mood is not None and user_data_input:
-        # Save data to session state
-        if not hasattr(st.session_state, 'user_data'):
-            st.session_state.user_data = []
+        # Add new data
+        new_entry = pd.DataFrame([[formatted_date_time, user_name, user_mood, user_data]],
+                                 columns=['Date', 'User Name', 'Mood', 'User Data'])
+        updated_data = pd.concat([existing_data, new_entry], ignore_index=True)
 
-        current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        # Save to file
+        updated_data.to_csv('user_data.csv', index=False)
 
-        # Save user data
-        user_entry = {
-            "Name": user_name,
-            "Mood": user_mood,
-            "Data": user_data_input,
-            "Location": user_location,
-            "Time": current_time
-        }
+        st.write('Analysis result saved!')
 
-        st.session_state.user_data.append(user_entry)
+# User inputs
+user_name = st.text_input('Enter your name:', 'Anonymous')
+user_mood = st.slider('How are you feeling today?', 0, 100, 50)
 
-        # Display success message
-        st.success("Data saved successfully!")
+# Create the interface
+st.title('WhistlePeep - An Early Warning System for Work Environment')
 
-# Main app
-def main():
-    st.title("WhistlePeep - Your Mood Tracker")
-    st.write("Welcome to WhistlePeep! Track your mood and share your thoughts.")
+# User's data input
+user_data = st.text_area('Write something about your day:', '')
 
-    save_user_data()
+# Display compiled data
+st.subheader('Compiled data:')
+save_data(user_name, user_mood, user_data)
+compiled_data = pd.read_csv('user_data.csv')
+st.write(compiled_data)
 
-    # Display user data
-    if hasattr(st.session_state, 'user_data') and st.session_state.user_data:
-        st.subheader("User Data:")
-        st.write(st.session_state.user_data)
-
-if __name__ == "__main__":
-    main()
+# Line chart for mood over time
+fig = px.line(compiled_data, x='Date', y='Mood', title='User Mood Over Time')
+st.plotly_chart(fig)
