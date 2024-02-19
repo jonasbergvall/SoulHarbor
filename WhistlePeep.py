@@ -16,7 +16,8 @@ def save_user_data(new_entry, user_data):
     return user_data
 
 # Initialize session state
-user_data = load_user_data()
+if 'user_input' not in st.session_state:
+    st.session_state.user_input = ""
 
 # Mood options
 mood_options = ['Very Bad', 'Bad', 'Neutral', 'Good', 'Very Good']
@@ -33,12 +34,15 @@ user_mood = st.sidebar.selectbox('How is your mood today?', mood_options, format
 user_ok_level = st.sidebar.selectbox('What is your OK level?', ok_level_options, format_func=lambda x: x)
 
 # Text input for describing the day
-user_input = st.text_area("Describe your day:")
+user_input = st.text_area("Describe your day:", value=st.session_state.user_input)
 
 # Button to submit data
 if st.button('Submit'):
     new_entry = {'Mood': user_mood, 'OK_Level': user_ok_level, 'Input': user_input}
     user_data = save_user_data(new_entry, user_data)
+
+    # Store user input in session state
+    st.session_state.user_input = user_input
 
 # Display user data
 st.write("User Data:")
@@ -54,6 +58,6 @@ if not user_data.empty:
 
 # Button to restart for a new user
 if st.button('Restart for a New User'):
-    user_input = ""  # Clear the text area
+    st.session_state.user_input = ""  # Clear the stored user input
     st.session_state.user_data = None
     st.experimental_rerun()
