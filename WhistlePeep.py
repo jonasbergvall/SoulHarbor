@@ -2,6 +2,10 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
+# Initialize session state
+if 'data_loaded' not in st.session_state:
+    st.session_state.data_loaded = False
+
 # Function to get user location (you can replace this with your geolocation logic)
 def get_user_location():
     # Mocking location data for demonstration purposes
