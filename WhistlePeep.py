@@ -16,6 +16,10 @@ def save_user_data(new_entry, user_data=None):
 def main():
     st.title("WhistlePeep App")
     
+    # Initialize session state if not exists
+    if 'user_data' not in st.session_state:
+        st.session_state.user_data = pd.DataFrame(columns=['Date', 'Mood'])
+
     # Get user input
     user_name = st.text_input("Enter your name:")
     user_mood = st.slider("Select your mood:", 0, 100, 50)
