@@ -54,5 +54,6 @@ if not user_data.empty:
 
 # Button to restart for a new user
 if st.button('Restart for a New User'):
+    user_input = ""  # Clear the text area
     st.session_state.user_data = None
     st.experimental_rerun()
