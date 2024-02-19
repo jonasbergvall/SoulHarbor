@@ -8,9 +8,10 @@ def get_user_location():
 
 # Function to save user data
 @st.cache(allow_output_mutation=True)
-def save_user_data(new_entry, user_data):
+def save_user_data(new_entry):
+    user_data = st.session_state.user_data.copy()
     user_data = user_data.append(new_entry, ignore_index=True)
-    return user_data.copy()
+    return user_data
 
 # Main Streamlit app
 def main():
@@ -33,7 +34,7 @@ def main():
     new_entry = {'Date': datetime.datetime.now(), 'Mood': user_mood, 'Location': user_location}
 
     # Save user data
-    st.session_state.user_data = save_user_data(new_entry, st.session_state.user_data)
+    st.session_state.user_data = save_user_data(new_entry)
 
     # Display user data
     st.write("User Data:")
