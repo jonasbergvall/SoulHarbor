@@ -2,10 +2,9 @@ import streamlit as st
 import pandas as pd
 
 # Function to save user data
-@st.cache(allow_output_mutation=True)
 def save_user_data(new_entry, user_data):
     user_data = user_data.append(new_entry, ignore_index=True)
-    return user_data.copy()
+    return user_data
 
 # Main function
 def main():
@@ -22,7 +21,9 @@ def main():
     new_entry = {'Date': pd.to_datetime('now'), 'Mood': user_mood, 'User': user_name, 'Input': user_input}
 
     # Save user data
-    st.session_state.user_data = save_user_data(new_entry, st.session_state.user_data)
+    if 'user_data' not in st.session_state or st.session_state.user_data is None:
+        st.session_state.user_data = pd.DataFrame(columns=['Date', 'Mood'])
+    st.session_state.user_data = st.session_state.user_data.pipe(save_user_data, new_entry)
 
     # Display area chart
     st.area_chart(st.session_state.user_data.set_index('Date')['Mood'], use_container_width=True, key='user_data_chart')
