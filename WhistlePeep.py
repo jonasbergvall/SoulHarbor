@@ -25,17 +25,20 @@ df = pd.read_csv('data.csv', names=['Date', 'Sentiment', 'OK level', 'Notes'])
 
 if len(df) > 0:
 
-  df['Gap'] = df['OK level'] - df['Sentiment'].map({'Very bad':1, 'Bad':2, 'Neutral':3, 'Good':4, 'Very good':5})
+  today = date.today().strftime('%Y-%m-%d')
 
-  fig = px.line(df, x='Date', y='Gap', title='Mood Gap Timeline')
-
-  fig.add_scatter(x=df['Date'], y=[df['Gap'].median()], name='Median')
-
-  fig.add_scatter(x=[today], y=[df['Gap'].iloc[-1]], mode='markers', name='You')
-
+  # Create chart
+  fig = px.line(df, ...) 
+  
+  # Plot median and current user
+  fig.add_scatter(...)
+  fig.add_scatter(x=[today], y=[...])
+  
 else:
 
-  fig = px.line(x=[], y=[], title='No Data')
+  # Empty plot
+  fig = px.line(x=[], y=[])
+
 
 st.write(fig)
 
