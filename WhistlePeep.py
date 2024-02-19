@@ -1,6 +1,5 @@
 import pandas as pd
 import streamlit as st
-import datetime
 
 # Function to save user data
 def save_user_data(new_entry):
@@ -10,9 +9,9 @@ def save_user_data(new_entry):
         user_data = pd.DataFrame(columns=['Date', 'Mood'])
 
     if isinstance(new_entry, pd.DataFrame):
-        user_data = user_data.append(new_entry, ignore_index=True)
+        user_data = pd.concat([user_data, new_entry], ignore_index=True)
     elif isinstance(new_entry, dict):
-        user_data = user_data.append(new_entry, ignore_index=True)
+        user_data = pd.concat([user_data, pd.DataFrame([new_entry])], ignore_index=True)
     else:
         st.warning("Invalid data format. Please provide data in the form of a DataFrame or a dictionary.")
         return user_data
@@ -21,7 +20,6 @@ def save_user_data(new_entry):
     st.session_state.user_data = user_data
     st.session_state.data_loaded = True  # New line to indicate data has been loaded
     return user_data
-
 
 
 
