@@ -30,7 +30,9 @@ def save_user_data():
 if 'user_data' in st.session_state and st.session_state.user_data:
     st.write("User Data Chart:")
     df_user_data = pd.DataFrame(st.session_state.user_data)
-    st.line_chart(df_user_data.set_index('Date')['Mood'], use_container_width=True).set_ylim(0, 100)
+    chart = st.line_chart(df_user_data.set_index('Date')['Mood'], use_container_width=True)
+    chart.ylim(0, 100)
+
 
 # Save user data
 save_user_data()
