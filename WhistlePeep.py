@@ -12,10 +12,8 @@ def save_user_data(new_entry):
         st.session_state.user_data = pd.DataFrame(columns=['Date', 'Mood'])
 
     st.session_state.user_data = st.session_state.user_data.append(new_entry, ignore_index=True)
+    st.session_state.user_data.to_csv('user_data.csv', index=False)
     return st.session_state.user_data
-
-
-
 
 # Main Streamlit app
 def main():
