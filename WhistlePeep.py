@@ -1,12 +1,15 @@
 import pandas as pd
 import streamlit as st
 import datetime
+import os
 
 # Function to save user data
 def save_user_data(new_entry):
-    user_data = st.session_state.get('user_data', None)
-
-    if user_data is None:
+    # Load existing user data or create a new DataFrame
+    user_data_path = 'user_data.csv'
+    if os.path.exists(user_data_path):
+        user_data = pd.read_csv(user_data_path)
+    else:
         user_data = pd.DataFrame(columns=['Date', 'Mood', 'OK_Level', 'Mood_Difference', 'Description'])
 
     # Calculate Mood_Difference
@@ -16,20 +19,21 @@ def save_user_data(new_entry):
     # Append the new entry to the user_data
     user_data = pd.concat([user_data, pd.DataFrame([new_entry])], ignore_index=True)
 
-    # Save the user_data in session_state
-    st.session_state.user_data = user_data
+    # Save the user_data to CSV
+    user_data.to_csv(user_data_path, index=False)
 
     return user_data
 
 # Function to display statistics
 def display_statistics():
-    user_data = st.session_state.get('user_data', None)
+    user_data_path = 'user_data.csv'
 
     st.write("## User Data")
-    st.write(user_data)
-
-    # Calculate and display statistics
-    if user_data is not None:
+    if os.path.exists(user_data_path):
+        user_data = pd.read_csv(user_data_path)
+        st.write(user_data)
+        
+        # Calculate and display statistics
         total_users = len(user_data)
         positive_mood_users = len(user_data[user_data['Mood_Difference'] > 0])
         negative_mood_users = len(user_data[user_data['Mood_Difference'] < 0])
@@ -38,6 +42,8 @@ def display_statistics():
         st.write(f"Total Users: {total_users}")
         st.write(f"Users with Positive Mood Difference: {positive_mood_users}")
         st.write(f"Users with Negative Mood Difference: {negative_mood_users}")
+    else:
+        st.write("No user data available.")
 
 # Main function
 def main():
@@ -68,7 +74,8 @@ def main():
 
     # Restart button
     if st.button("Restart for a new user"):
-        st.session_state.user_data = None
+        if os.path.exists('user_data.csv'):
+            os.remove('user_data.csv')
 
 if __name__ == "__main__":
     main()
