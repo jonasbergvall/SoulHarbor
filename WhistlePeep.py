@@ -29,5 +29,5 @@ if not df.empty:
   st.bar_chart(avg, x='OK level', y='Date')
 
 if st.button('Done'):
-  st.legacy_caching.clear_cache()
-  st.write('App reset') 
+  st.cache_resource.clear()
+  st.write('App reset')
