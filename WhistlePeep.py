@@ -7,12 +7,14 @@ def get_user_location():
     return "Dummy Location"
 
 # Function to save user data
-@st.cache(allow_output_mutation=True)
 def save_user_data(new_entry):
-    user_data = st.session_state.user_data.copy()
+    user_data = st.session_state.user_data
+    if 'user_data' not in st.session_state:
+        user_data = pd.DataFrame(columns=['Date', 'Mood'])
     user_data = user_data.append(new_entry, ignore_index=True)
     st.session_state.user_data = user_data
     return user_data
+
 
 
 # Main Streamlit app
