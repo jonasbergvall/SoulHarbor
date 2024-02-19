@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import datetime
+import plotly.express as px
 
 # Initialize session state
 if 'user_data' not in st.session_state:
@@ -35,7 +36,9 @@ def main():
         st.write("Your data has been submitted!")
         st.session_state.user_data = save_user_data(new_entry)
 
-        st.line_chart(st.session_state.user_data.set_index('Date')['Mood'], use_container_width=True)
+        # Plot using Plotly
+        fig = px.line(st.session_state.user_data, x='Date', y='Mood', title='Mood Over Time')
+        st.plotly_chart(fig)
 
 if __name__ == "__main__":
     main()
