@@ -2,8 +2,8 @@ import streamlit as st
 import pandas as pd
 import datetime
 
-# Global variable to store user data
-user_data = pd.DataFrame(columns=['Date', 'Mood', 'Location'])
+# Global list to store user data
+user_data = []
 
 # Function to get user location (dummy data for illustration purposes)
 def get_user_location():
@@ -12,7 +12,7 @@ def get_user_location():
 # Function to save user data
 def save_user_data(new_entry):
     global user_data
-    user_data = user_data.append(pd.Series(new_entry), ignore_index=True)
+    user_data.append(new_entry)
 
 # Main Streamlit app
 def main():
@@ -35,10 +35,10 @@ def main():
 
     # Display user data
     st.write("User Data:")
-    st.write(user_data)
+    st.write(pd.DataFrame(user_data))
 
     # Display mood chart
-    st.line_chart(user_data.set_index('Date')['Mood'], use_container_width=True).set_ylim(0, 100)
+    st.line_chart(pd.DataFrame(user_data)['Mood'], use_container_width=True).set_ylim(0, 100)
 
 # Run the app
 if __name__ == "__main__":
