@@ -1,30 +1,41 @@
 import streamlit as st
 import pandas as pd
+import datetime
 
-# Function to save user data
+# Initialize session state
+if 'user_data' not in st.session_state:
+    st.session_state.user_data = None
+
 def save_user_data(new_entry):
-    user_data = pd.read_csv('user_data.csv') if st.session_state.user_data is None else st.session_state.user_data
+    user_data = st.session_state.user_data
+    if user_data is None:
+        user_data = pd.DataFrame(columns=['Date', 'Mood', 'User', 'Input'])
+
     user_data = user_data.append(new_entry, ignore_index=True)
     user_data.to_csv('user_data.csv', index=False)
+
     st.session_state.user_data = user_data
     return user_data
 
-# Main function
 def main():
-    # Get user input
-    user_mood = st.slider("Select your mood:", 0, 100, 50)
+    st.title("WhistlePeep App")
+
     user_name = st.text_input("Enter your name:")
-    user_input = st.text_area("Share your thoughts:")
+    user_mood = st.slider("Rate your mood (0-100):", 0, 100)
+    user_input = st.text_area("Anything you want to share?")
 
-    # Create a new entry
-    new_entry = {'Date': pd.to_datetime('now'), 'Mood': user_mood, 'User': user_name, 'Input': user_input}
+    if st.button("Submit"):
+        new_entry = {
+            'Date': datetime.datetime.now(),
+            'Mood': user_mood,
+            'User': user_name,
+            'Input': user_input
+        }
 
-    # Save user data
-    st.session_state.user_data = save_user_data(new_entry)
+        st.write("Your data has been submitted!")
+        st.session_state.user_data = save_user_data(new_entry)
 
-    # Display area chart
-    st.area_chart(st.session_state.user_data.set_index('Date')['Mood'], use_container_width=True, key='user_data_chart')
+        st.line_chart(st.session_state.user_data.set_index('Date')['Mood'], use_container_width=True)
 
-# Run the app
 if __name__ == "__main__":
     main()
