@@ -30,7 +30,7 @@ def main():
     # Display mood over time using area chart
     if not st.session_state.user_data.empty:
         st.subheader("Mood Over Time")
-        st.area_chart(st.session_state.user_data.set_index('Date')['Mood'], use_container_width=True).set_ylim(0, 100)
+        st.area_chart(st.session_state.user_data.set_index('Date')['Mood'], use_container_width=True, y_axis_format='%.0f', key='user_data_chart')
 
 if __name__ == "__main__":
     # Check if 'user_data' is in session state, initialize if not
