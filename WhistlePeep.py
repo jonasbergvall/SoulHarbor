@@ -52,5 +52,6 @@ if st.button('Analyze'):
     st.write(user_data)
 
     # Display a chart using Plotly Express
-    fig = px.line(user_data, x='Name', y='Mood', title='User Mood Over Time')
+    all_user_data = pd.read_csv('user_data.csv')
+    fig = px.line(all_user_data, x='Name', y='Mood', title='User Mood Over Time')
     st.plotly_chart(fig)
