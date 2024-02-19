@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import datetime
-import plotly.express as px
 
 # Initialize session state
 if 'user_data' not in st.session_state:
@@ -24,10 +23,6 @@ def main():
     
     # Display user data
     st.dataframe(st.session_state.user_data)
-    
-    # Plot mood over time using Plotly Express
-    fig = px.line(st.session_state.user_data, x='Date', y='Mood', title='Mood Over Time')
-    st.plotly_chart(fig)
 
 # Run the app
 if __name__ == '__main__':
