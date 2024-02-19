@@ -25,20 +25,14 @@ df = pd.read_csv('data.csv', names=['Date', 'Sentiment', 'OK level', 'Notes'])
 
 if len(df) > 0:
 
-  today = date.today().strftime('%Y-%m-%d')
+  # Create px figure
+  fig = px.line(...)
 
-  # Create chart
-  fig = px.line(df, ...) 
-  
-  # Plot median and current user
-  fig.add_scatter(...)
-  fig.add_scatter(x=[today], y=[...])
-  
 else:
 
-  # Empty plot
-  fig = px.line(x=[], y=[])
-
+  # Use Plotly Graph Objects
+  fig = go.Figure()
+  fig.update_layout(title='No Data')
 
 st.write(fig)
 
