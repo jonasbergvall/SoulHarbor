@@ -11,13 +11,19 @@ def get_user_location():
     # Mocking location data for demonstration purposes
     return {'latitude': 37.7749, 'longitude': -122.4194}
 
-# Function to save user data
-def save_user_data():
-    # Get user input
-    user_name = st.text_input("Your Name")
-    user_mood = st.slider("How's your mood today?", 0, 100, 50)
-    user_text = st.text_area("Write something about your day")
+# Get user input outside the 'Analyze' button condition
+user_name = st.text_input("Your Name")
+user_mood = st.slider("How's your mood today?", 0, 100, 50)
+user_text = st.text_area("Write something about your day")
 
+# Display the user input
+st.write("### User Input:")
+st.write(f"Name: {user_name}")
+st.write(f"Mood: {user_mood}")
+st.write(f"Text: {user_text}")
+
+# Run the save_user_data function when the 'Analyze' button is clicked
+if st.button('Analyze'):
     # Get user location (mocked for demonstration)
     user_location = get_user_location()
 
@@ -48,7 +54,3 @@ def save_user_data():
     # Display a chart using Plotly Express
     fig = px.line(user_data, x='Name', y='Mood', title='User Mood Over Time')
     st.plotly_chart(fig)
-
-# Run the save_user_data function when the 'Analyze' button is clicked
-if st.button('Analyze'):
-    save_user_data()
