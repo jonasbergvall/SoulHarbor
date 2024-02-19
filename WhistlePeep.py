@@ -1,48 +1,60 @@
 import streamlit as st
-import pandas as pd
-from datetime import datetime
 import plotly.express as px
+import pandas as pd
+import datetime
 
-# Function to save data to a file
-def save_data(user_name, user_mood, user_data):
-    # Read existing data from the file if it exists
-    try:
-        existing_data = pd.read_csv('user_data.csv')
-    except FileNotFoundError:
-        existing_data = pd.DataFrame(columns=['Date', 'User Name', 'Mood', 'User Data'])
+# Function to get user geolocation
+def get_user_location():
+    location = st.session_state.location
+    if not location:
+        st.warning("Geolocation not available. Please make sure to enable location access in your browser.")
+        return None
+    return location
 
-    # Add new data only if the user clicked on Analyze
-    if st.button('Analyze'):
-        # Automatic identification of the current date and time
-        current_date_time = datetime.now()
-        formatted_date_time = current_date_time.strftime("%Y-%m-%d %H:%M:%S")
+# Function to save user data
+def save_user_data():
+    user_name = st.session_state.user_name
+    user_mood = st.slider("How's your mood today?", 0, 100, 50)
+    user_text = st.text_area("Write something about your day")
+    user_location = get_user_location()
 
-        # Add new data
-        new_entry = pd.DataFrame([[formatted_date_time, user_name, user_mood, user_data]],
-                                 columns=['Date', 'User Name', 'Mood', 'User Data'])
-        updated_data = pd.concat([existing_data, new_entry], ignore_index=True)
+    # Get current date and time
+    current_datetime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-        # Save to file
-        updated_data.to_csv('user_data.csv', index=False)
+    # Save data to session_state
+    if 'user_data' not in st.session_state:
+        st.session_state.user_data = pd.DataFrame(columns=["Date", "Time", "User Name", "Mood", "Text", "Location"])
 
-        st.write('Analysis result saved!')
+    st.session_state.user_data = st.session_state.user_data.append({
+        "Date": current_datetime.split()[0],
+        "Time": current_datetime.split()[1],
+        "User Name": user_name,
+        "Mood": user_mood,
+        "Text": user_text,
+        "Location": user_location
+    }, ignore_index=True)
 
-# User inputs
-user_name = st.text_input('Enter your name:', 'Anonymous')
-user_mood = st.slider('How are you feeling today?', 0, 100, 50)
+# Load saved user data
+if 'user_data' not in st.session_state:
+    st.session_state.user_data = pd.DataFrame(columns=["Date", "Time", "User Name", "Mood", "Text", "Location"])
 
-# Create the interface
-st.title('WhistlePeep - An Early Warning System for Work Environment')
+# Main app
+st.title("WhistlePeep - Your Mood Tracker")
 
-# User's data input
-user_data = st.text_area('Write something about your day:', '')
+# User input
+st.session_state.user_name = st.text_input("Enter your name:")
+save_button = st.button("Save my data")
 
-# Display compiled data
-st.subheader('Compiled data:')
-save_data(user_name, user_mood, user_data)
-compiled_data = pd.read_csv('user_data.csv')
-st.write(compiled_data)
+# Save data when the "Save my data" button is clicked
+if save_button:
+    save_user_data()
 
-# Line chart for mood over time
-fig = px.line(compiled_data, x='Date', y='Mood', title='User Mood Over Time')
-st.plotly_chart(fig)
+# Display saved data
+if not st.session_state.user_data.empty:
+    st.subheader("Your Saved Data:")
+    st.write(st.session_state.user_data)
+
+# Plot mood over time
+if st.checkbox("Show Mood Over Time"):
+    fig = px.line(st.session_state.user_data, x="Date", y="Mood", title="Mood Over Time", markers=True)
+    st.plotly_chart(fig)
