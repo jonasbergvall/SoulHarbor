@@ -20,6 +20,10 @@ def save_user_data():
     # Get geolocation
     user_location = get_user_location()
 
+    # If 'user_data' is not in session state, initialize an empty list
+    if 'user_data' not in st.session_state:
+        st.session_state.user_data = []
+
     # Save user data if Analyze button is clicked
     if st.button("Analyze"):
         # Create a new entry
@@ -31,17 +35,14 @@ def save_user_data():
             "Location": user_location,
         }
 
-        # If 'user_data' is not in session state, initialize an empty DataFrame
-        if 'user_data' not in st.session_state:
-            st.session_state.user_data = pd.DataFrame()
-
-        # Append user data to the session state
-        st.session_state.user_data = st.session_state.user_data.append(new_entry, ignore_index=True)
+        # Append user data to the session state list
+        st.session_state.user_data.append(new_entry)
 
 # Display user data chart
-if 'user_data' in st.session_state and not st.session_state.user_data.empty:
+if 'user_data' in st.session_state and st.session_state.user_data:
     st.write("User Data Chart:")
-    st.line_chart(st.session_state.user_data.set_index('Date')['Mood'])
+    df_user_data = pd.DataFrame(st.session_state.user_data)
+    st.line_chart(df_user_data.set_index('Date')['Mood'])
 
 # Save user data
 save_user_data()
