@@ -1,11 +1,5 @@
-import streamlit as st
 import pandas as pd
-import datetime
-import plotly.express as px
-
-# Initialize session state
-if 'user_data' not in st.session_state:
-    st.session_state.user_data = None
+import streamlit as st
 
 def save_user_data(new_entry):
     user_data = st.session_state.user_data
@@ -15,6 +9,8 @@ def save_user_data(new_entry):
     return st.session_state.user_data
 
 # rest of your code...
+
+
 
 
 
