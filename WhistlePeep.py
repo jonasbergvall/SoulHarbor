@@ -3,8 +3,8 @@ import streamlit as st
 import datetime
 
 # Function to save user data
-def save_user_data(new_entry):
-    user_data = st.session_state.user_data
+@st.cache(allow_output_mutation=True)
+def save_user_data(new_entry, user_data):
     if user_data is None:
         user_data = pd.DataFrame(columns=['Date', 'Mood', 'OK_Level', 'Mood_Difference', 'Description'])
 
@@ -18,6 +18,7 @@ def save_user_data(new_entry):
     return user_data
 
 # Function to display statistics
+@st.cache(allow_output_mutation=True)
 def calculate_statistics(user_data):
     total_users = len(user_data) if user_data is not None else 0
     positive_mood_users = len(user_data[user_data['Mood_Difference'] > 0]) if user_data is not None else 0
@@ -59,7 +60,7 @@ def main():
     }
 
     if st.button("Save"):
-        st.session_state.user_data = save_user_data(new_entry)
+        st.session_state.user_data = save_user_data(new_entry, st.session_state.user_data)
         st.success("Data saved successfully!")
 
     # Display statistics
