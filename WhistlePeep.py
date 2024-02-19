@@ -3,6 +3,7 @@ import streamlit as st
 import datetime
 
 # Function to save user data
+@st.cache_data(allow_output_mutation=True)
 def save_user_data(new_entry):
     user_data = st.session_state.user_data
     if user_data is None:
@@ -14,9 +15,6 @@ def save_user_data(new_entry):
 
     # Append the new entry to the user_data
     user_data = pd.concat([user_data, pd.DataFrame([new_entry])], ignore_index=True)
-
-    # Update session state
-    st.session_state.user_data = user_data
 
     return user_data
 
@@ -35,10 +33,6 @@ def display_statistics():
         st.write(f"Total Users: {total_users}")
         st.write(f"Users with Positive Mood Difference: {positive_mood_users}")
         st.write(f"Users with Negative Mood Difference: {negative_mood_users}")
-
-# Initialize session state
-if 'user_data' not in st.session_state:
-    st.session_state.user_data = None
 
 # Main function
 def main():
