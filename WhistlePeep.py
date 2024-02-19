@@ -1,51 +1,48 @@
 import streamlit as st
 import pandas as pd
-from datetime import datetime
+import plotly.express as px
+
+# Function to get user location (if available)
+def get_user_location():
+    # Replace this with your geolocation logic
+    return {"latitude": 0, "longitude": 0}
 
 # Function to save user data
 def save_user_data():
-    # Get user input
-    user_name = st.text_input("User Name")
-    user_mood = st.slider("How's your mood today?", 0, 100, 50)
-    user_data_input = st.text_area("Write something about your day")
+    new_entry = {
+        "User": st.session_state.user_name,
+        "Date": st.session_state.date,
+        "Mood": st.session_state.user_mood,
+        "Location": get_user_location(),
+    }
 
-    # If 'user_data' is not in session state, initialize an empty list
+    # Create DataFrame if not exists
     if 'user_data' not in st.session_state:
-        st.session_state.user_data = []
+        st.session_state.user_data = pd.DataFrame(columns=["User", "Date", "Mood", "Location"])
 
-    # Save user data if Analyze button is clicked
-    if st.button("Analyze"):
-        # Create a new entry
-        new_entry = {
-            "User Name": user_name,
-            "Mood": user_mood,
-            "Data Input": user_data_input,
-            "Date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        }
+    # Append new entry to user_data
+    st.session_state.user_data = st.session_state.user_data.append(new_entry, ignore_index=True)
 
-        # Append user data to the session state list
-        st.session_state.user_data.append(new_entry)
+# Set user name and date
+st.session_state.user_name = st.text_input("User Name:")
+st.session_state.date = st.date_input("Date:")
+
+# Set user mood using a slider
+st.session_state.user_mood = st.slider("How was your day?", 0, 100, 50)
+
+# Save user data on button click
+if st.button("Analyze"):
+    save_user_data()
 
 # Display user data chart
-if 'user_data' in st.session_state and st.session_state.user_data:
+if 'user_data' in st.session_state and not st.session_state.user_data.empty:
     st.write("User Data Chart:")
-    df_user_data = pd.DataFrame(st.session_state.user_data)
     
-    # Create a Matplotlib figure using Streamlit
-    fig, ax = st.pyplot()
+    # Create a Plotly figure
+    fig = px.line(st.session_state.user_data, x='Date', y='Mood', color='User', labels={'Mood': 'User Mood'})
 
-    # Plot the data
-    ax.plot(df_user_data.set_index('Date')['Mood'])
-    
     # Set y-axis limits
-    ax.set_ylim(0, 100)
+    fig.update_yaxes(range=[0, 100])
 
-
-
-
-# Save user data
-save_user_data()
-
-# Button to start a new entry
-if st.button("New Entry"):
-    st.session_state.sync()  # Sync session state to clear previous data
+    # Show the figure
+    st.plotly_chart(fig)
