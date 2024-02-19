@@ -8,9 +8,11 @@ def get_user_location():
     return {"latitude": 0, "longitude": 0}
 
 # Function to save user data
-@st.cache(allow_output_mutation=True)
+@st.cache_data(allow_output_mutation=True)
 def save_user_data(user_data, new_entry):
     user_data.append(new_entry)
+    return user_data
+
 
 # Set user name and date
 user_name = st.text_input("User Name:")
