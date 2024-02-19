@@ -11,6 +11,11 @@ def get_user_location():
     # Mocking location data for demonstration purposes
     return {'latitude': 37.7749, 'longitude': -122.4194}
 
+# Function to reset data for a new user
+def reset_data():
+    st.session_state.data_loaded = False
+    st.session_state.user_data = pd.DataFrame()
+
 # Get user input outside the 'Analyze' button condition
 user_name = st.text_input("Your Name")
 user_mood = st.slider("How's your mood today?", 0, 100, 50)
@@ -35,7 +40,7 @@ if st.button('Analyze'):
     st.write(f"Location: {user_location}")
 
     # Save user data to a DataFrame
-    user_data = pd.DataFrame({
+    new_entry = pd.DataFrame({
         'Name': [user_name],
         'Mood': [user_mood],
         'Text': [user_text],
@@ -43,15 +48,17 @@ if st.button('Analyze'):
         'Longitude': [user_location['longitude']]
     })
 
-    # Append user data to a CSV file
-    user_data.to_csv('user_data.csv', mode='a', header=not st.session_state.data_loaded, index=False)
-    st.session_state.data_loaded = True
+    # Append user data to the session state
+    st.session_state.user_data = st.session_state.user_data.append(new_entry, ignore_index=True)
 
     # Display the data
     st.write("### Compiled Data:")
-    st.write(user_data)
+    st.write(st.session_state.user_data)
 
     # Display a chart using Plotly Express
-    all_user_data = pd.read_csv('user_data.csv')
-    fig = px.line(all_user_data, x='Name', y='Mood', title='User Mood Over Time')
+    fig = px.line(st.session_state.user_data, x=st.session_state.user_data.index, y='Mood', title='User Mood Over Time')
     st.plotly_chart(fig)
+
+# Button to reset data for a new user
+if st.button('New Entry'):
+    reset_data()
