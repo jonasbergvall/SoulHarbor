@@ -19,18 +19,18 @@ def save_user_data(new_entry, user_data):
 user_data = load_user_data()
 
 # Mood options
-mood_options = ['Very Bad', 'Bad', 'Neutral', 'Good', 'Excellent']
+mood_options = ['Very Bad', 'Bad', 'Neutral', 'Good', 'Very Good']
 
 # OK level options
-ok_level_options = ['Very Bad', 'Bad', 'Neutral', 'Good', 'Excellent']
+ok_level_options = ['Very Bad', 'Bad', 'Neutral', 'Good', 'Very Good']
 
 # Assign numerical values to mood and OK levels
-mood_values = {'Very Bad': 1, 'Bad': 2, 'Neutral': 3, 'Good': 4, 'Excellent': 5}
-ok_level_values = {'Very Bad': 1, 'Bad': 2, 'Neutral': 3, 'Good': 4, 'Excellent': 5}
+mood_values = {'Very Bad': 1, 'Bad': 2, 'Neutral': 3, 'Good': 4, 'Very Good': 5}
+ok_level_values = {'Very Bad': 1, 'Bad': 2, 'Neutral': 3, 'Good': 4, 'Very Good': 5}
 
 # Sidebar for user input
-user_mood = st.sidebar.selectbox('How is your mood today?', mood_options, format_func=lambda x: mood_values[x])
-user_ok_level = st.sidebar.selectbox('What is your OK level?', ok_level_options, format_func=lambda x: ok_level_values[x])
+user_mood = st.sidebar.selectbox('How is your mood today?', mood_options, format_func=lambda x: x)
+user_ok_level = st.sidebar.selectbox('What is your OK level?', ok_level_options, format_func=lambda x: x)
 
 # Text input for describing the day
 user_input = st.text_area("Describe your day:")
