@@ -18,20 +18,25 @@ def save_user_data(new_entry):
     return user_data
 
 # Function to display statistics
+def calculate_statistics(user_data):
+    total_users = len(user_data) if user_data is not None else 0
+    positive_mood_users = len(user_data[user_data['Mood_Difference'] > 0]) if user_data is not None else 0
+    negative_mood_users = len(user_data[user_data['Mood_Difference'] < 0]) if user_data is not None else 0
+
+    return total_users, positive_mood_users, negative_mood_users
+
+# Function to display statistics
 def display_statistics(user_data):
     st.write("## User Data")
     st.write(user_data)
 
     # Calculate and display statistics
-    if user_data is not None:
-        st.write("## Statistics")
-        total_users = len(user_data)
-        positive_mood_users = len(user_data[user_data['Mood_Difference'] > 0])
-        negative_mood_users = len(user_data[user_data['Mood_Difference'] < 0])
+    total_users, positive_mood_users, negative_mood_users = calculate_statistics(user_data)
 
-        st.write(f"Total Users: {total_users}")
-        st.write(f"Users with Positive Mood Difference: {positive_mood_users}")
-        st.write(f"Users with Negative Mood Difference: {negative_mood_users}")
+    st.write("## Statistics")
+    st.write(f"Total Users: {total_users}")
+    st.write(f"Users with Positive Mood Difference: {positive_mood_users}")
+    st.write(f"Users with Negative Mood Difference: {negative_mood_users}")
 
 # Main function
 def main():
