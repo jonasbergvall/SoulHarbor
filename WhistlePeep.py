@@ -1,41 +1,32 @@
 import streamlit as st
 import pandas as pd
-import datetime
 
 # Function to save user data
+@st.cache(allow_output_mutation=True)
 def save_user_data(new_entry, user_data):
-    user_data = pd.concat([user_data, pd.DataFrame([new_entry])], ignore_index=True)
+    user_data = user_data.append(new_entry, ignore_index=True)
     return user_data
-
 
 # Main function
 def main():
-    st.title("WhistlePeep App")
+    # Check if 'user_data' exists in session state
+    if 'user_data' not in st.session_state:
+        st.session_state.user_data = pd.DataFrame(columns=['Date', 'Mood'])
 
-    # User input
-    user_name = st.text_input("Enter your name:")
+    # Get user input
     user_mood = st.slider("Select your mood:", 0, 100, 50)
+    user_name = st.text_input("Enter your name:")
     user_input = st.text_area("Share your thoughts:")
 
-    # Save user data on button click
-    if st.button("Save Entry"):
-        new_entry = {'Date': datetime.datetime.now(), 'Mood': user_mood, 'User': user_name, 'Input': user_input}
-        st.session_state.user_data = save_user_data(new_entry, st.session_state.user_data)
-        st.success("Entry saved successfully!")
+    # Create a new entry
+    new_entry = {'Date': pd.to_datetime('now'), 'Mood': user_mood, 'User': user_name, 'Input': user_input}
 
-    # Display user data in a table
-    st.subheader("Your Entries:")
-    st.write(st.session_state.user_data)
+    # Save user data
+    st.session_state.user_data = save_user_data(new_entry, st.session_state.user_data)
 
-    # Display mood over time using area chart
-    if not st.session_state.user_data.empty:
-        st.subheader("Mood Over Time")
-        st.area_chart(st.session_state.user_data.set_index('Date')['Mood'], use_container_width=True, key='user_data_chart')
+    # Display area chart
+    st.area_chart(st.session_state.user_data.set_index('Date')['Mood'], use_container_width=True, key='user_data_chart')
 
-
+# Run the app
 if __name__ == "__main__":
-    # Check if 'user_data' is in session state, initialize if not
-    if 'user_data' not in st.session_state:
-        st.session_state.user_data = pd.DataFrame(columns=['Date', 'Mood', 'User', 'Input'])
-
     main()
