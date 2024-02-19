@@ -3,7 +3,7 @@ import streamlit as st
 import datetime
 
 # Function to save user data
-@st.cache_data(allow_output_mutation=True)
+@st.cache(allow_output_mutation=True)
 def save_user_data(new_entry):
     user_data = st.session_state.user_data
     if user_data is None:
@@ -64,7 +64,6 @@ def main():
     # Restart button
     if st.button("Restart for a new user"):
         st.session_state.user_data = None
-        st.text_area("")
 
 if __name__ == "__main__":
     main()
