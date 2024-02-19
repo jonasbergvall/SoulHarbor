@@ -4,11 +4,7 @@ import datetime
 # Function to get user geolocation
 def get_user_location():
     try:
-        location = st.session_state.location
-        if not location:
-            st.warning("Geolocation not available. Please make sure to enable location access in your browser.")
-            return None
-        return location
+        return st.session_state.location
     except AttributeError:
         st.warning("Geolocation not available. Please make sure to enable location access in your browser.")
         return None
@@ -23,7 +19,7 @@ def save_user_data():
     user_location = get_user_location()
 
     # Save data if all inputs are provided
-    if user_name and user_mood is not None and user_data_input and user_location:
+    if user_name and user_mood is not None and user_data_input:
         # Save data to session state
         if not hasattr(st.session_state, 'user_data'):
             st.session_state.user_data = []
