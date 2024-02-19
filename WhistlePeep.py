@@ -11,8 +11,9 @@ def save_user_data(new_entry):
     user_data = st.session_state.user_data
     user_data = user_data.append(new_entry, ignore_index=True)
     user_data.to_csv('user_data.csv', index=False)
-    st.session_state.user_data = user_data.reset_index(drop=True)  # Resetting index
-    return user_data
+    st.session_state.user_data = pd.read_csv('user_data.csv')
+    return st.session_state.user_data
+
 
 
 
