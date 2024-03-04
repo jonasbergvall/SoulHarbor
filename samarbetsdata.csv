@@ -1,5 +1,6 @@
-Deltagare 1,Deltagare 2,Typ av samarbete,Startdatum,Slutdatum
-Anna,Erik,Projekt X,Januari 2023,December 2024
-Erik,Sofia,Projekt Y,Februari 2023,Löpande
-Sofia,David,Projekt Z,Mars 2023,September 2023
-Anna,David,Projekt W,April 2023,December 2023
+Deltagare,ID,Samarbete1,Samarbete2,Samarbete3,Samarbete4,Samarbete5
+Anna,1,0,1,1,0,0
+Björn,2,1,0,0,1,0
+Clara,3,1,0,0,0,1
+David,4,0,1,0,1,0
+Emma,5,0,0,1,0,1
