@@ -33,28 +33,14 @@ selected_time = st.slider('Select a time step:', min_value=0, max_value=time_ste
 filtered_data = data[data['Time'] == selected_time]
 
 # Create a NetworkX graph from the filtered DataFrame
-G = nx.Graph()
-
-# Add edges with weights to the graph
-for index, row in filtered_data.iterrows():
-    source, target, weight = row['Source'], row['Target'], row['Weight']
-    G.add_edge(source, target, weight=weight)
+G = nx.from_pandas_edgelist(filtered_data, 'Source', 'Target', edge_attr='Weight')
 
 # Set node attributes for interaction frequency
 for node in G.nodes():
-    G.nodes[node]['Weight'] = sum([edge_data['weight'] for neighbor, edge_data in G.edges(node, data=True)])
-
-# Calculate the maximum edge weight
-max_edge_weight = max([edge_data['weight'] for edge, edge_data in G.edges(data=True)])
+    G.nodes[node]['Weight'] = sum([G[node][neighbor]['Weight'] for neighbor in G.neighbors(node)])
 
 # Create a dictionary of node positions for better visualization
-# Adjust the k parameter based on the edge weights
-pos = nx.spring_layout(
-    G,
-    k=0.5 / (max_edge_weight ** 0.5),  # Smaller k value for higher edge weights
-    scale=10,
-    iterations=100
-)
+pos = nx.spring_layout(G, k=0.5, iterations=100)
 
 # Prepare the edges and nodes data for Plotly
 edge_x = []
