@@ -27,6 +27,10 @@ data = pd.concat([data, data.rename(columns={'Source': 'Target', 'Target': 'Sour
 # Create a NetworkX graph
 G = nx.from_pandas_edgelist(data, 'Source', 'Target', edge_attr='Weight')
 
+# Set node attributes for interaction frequency
+for node in G.nodes():
+    G.nodes[node]['Weight'] = sum([G[node][neighbor]['Weight'] for neighbor in G.neighbors(node)])
+
 # Create a dictionary of node positions for better visualization
 pos = nx.spring_layout(G, k=0.5)
 
