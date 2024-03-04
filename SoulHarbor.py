@@ -2,7 +2,9 @@ import streamlit as st
 import pandas as pd
 
 # Hämta data från CSV-fil
-samarbete_data = pd.read_csv("samarbetsdata.csv", index_col="ID")
+
+samarbete_data = pd.read_csv("samarbetsdata.csv", index_col="Deltagare")
+
 
 # Ange deltagare och ID för visualisering
 deltagare = st.sidebar.selectbox("Välj deltagare", samarbete_data.index)
