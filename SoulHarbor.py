@@ -18,7 +18,8 @@ data = pd.DataFrame(columns=['Source', 'Target', 'Weight'])
 for i in range(len(individuals)):
     for j in range(i+1, len(individuals)):
         weight = random.randint(1, 10)
-        data = data.append({'Source': individuals[i], 'Target': individuals[j], 'Weight': weight}, ignore_index=True)
+        new_data = pd.DataFrame({'Source': [individuals[i]], 'Target': [individuals[j]], 'Weight': [weight]})
+        data = pd.concat([data, new_data], ignore_index=True)
 
 # Make the DataFrame symmetric (assuming interactions are bidirectional)
 data = pd.concat([data, data.rename(columns={'Source': 'Target', 'Target': 'Source'})], ignore_index=True)
