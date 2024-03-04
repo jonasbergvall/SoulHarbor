@@ -3,7 +3,8 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import networkx as nx
-from node2vec import Graph, attraction_layout
+import gephi
+from gephi.statistics import Modularity
 import random
 
 st.title('SoulHarbor: Collaboration Network Visualization')
@@ -40,19 +41,32 @@ G = nx.from_pandas_edgelist(filtered_data, 'Source', 'Target', edge_attr='Weight
 for node in G.nodes():
     G.nodes[node]['Weight'] = sum([G[node][neighbor]['Weight'] for neighbor in G.neighbors(node)])
 
-# Set attractive and repulsive forces based on edge weights
-edge_attraction = {(u, v): G[u][v]['Weight'] for u, v in G.edges()}
-node_repulsion = {v: 1 / G.degree(v) for v in G.nodes()}
+# Connect to the Gephi server
+gephi.project.new()
+gephi.project.open("")
 
-# Create a Node2Vec Graph object
-graph = Graph(edge_attraction=edge_attraction, node_repulsion=node_repulsion)
+# Add nodes and edges to the Gephi graph
+for node in G.nodes():
+    gephi.graph.add_node(node)
+    gephi.graph.set_node_label(node, node)
 
-# Add nodes and edges to the graph
-graph.add_nodes(list(G.nodes()))
-graph.add_edges(list(G.edges()))
+for edge in G.edges():
+    gephi.graph.add_edge(edge[0], edge[1])
+    gephi.graph.set_edge_weight(edge[0], edge[1], G[edge[0]][edge[1]]['Weight'])
 
-# Calculate the layout
-pos = attraction_layout(graph, dim=2, scale=10)
+# Run the ForceAtlas2 layout algorithm
+gephi.layout.run("ForceAtlas 2", time_limit=10000)
+
+# Get the node positions
+node_positions = gephi.graph.get_node_positions()
+
+# Create a dictionary of node positions
+pos = {}
+for node in G.nodes():
+    pos[node] = (node_positions[node][0], node_positions[node][1])
+
+# Close the Gephi server connection
+gephi.project.close()
 
 # Prepare the edges and nodes data for Plotly
 edge_x = []
