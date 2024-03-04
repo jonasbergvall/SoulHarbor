@@ -3,6 +3,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import networkx as nx
+from node2vec import Graph, attraction_layout
 import random
 
 st.title('SoulHarbor: Collaboration Network Visualization')
@@ -39,17 +40,19 @@ G = nx.from_pandas_edgelist(filtered_data, 'Source', 'Target', edge_attr='Weight
 for node in G.nodes():
     G.nodes[node]['Weight'] = sum([G[node][neighbor]['Weight'] for neighbor in G.neighbors(node)])
 
-# Calculate the maximum edge weight
-max_edge_weight = max([edge_data['Weight'] for u, v, edge_data in G.edges(data=True)])
+# Set attractive and repulsive forces based on edge weights
+edge_attraction = {(u, v): G[u][v]['Weight'] for u, v in G.edges()}
+node_repulsion = {v: 1 / G.degree(v) for v in G.nodes()}
 
-# Create a dictionary of node positions for better visualization
-# Adjust the k parameter based on the edge weights
-pos = nx.spring_layout(
-    G,
-    k=0.5 / (max_edge_weight ** 0.5),  # Smaller k value for higher edge weights
-    scale=10,
-    iterations=100
-)
+# Create a Node2Vec Graph object
+graph = Graph(edge_attraction=edge_attraction, node_repulsion=node_repulsion)
+
+# Add nodes and edges to the graph
+graph.add_nodes(list(G.nodes()))
+graph.add_edges(list(G.edges()))
+
+# Calculate the layout
+pos = attraction_layout(graph, dim=2, scale=10)
 
 # Prepare the edges and nodes data for Plotly
 edge_x = []
