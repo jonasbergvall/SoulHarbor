@@ -3,6 +3,7 @@ import pandas as pd
 import networkx as nx
 import plotly.graph_objects as go
 import random
+import numpy as np
 
 st.title('SoulHarbor: Collaboration Network Visualization')
 
@@ -40,6 +41,11 @@ for node in G.nodes():
 
 # Create a dictionary of node positions for better visualization
 pos = nx.spring_layout(G, k=0.5, iterations=100)
+
+# Add random noise to the positions of the nodes
+noise_level = 0.1
+for node in G.nodes():
+    pos[node] = (pos[node][0] + random.uniform(-noise_level, noise_level), pos[node][1] + random.uniform(-noise_level, noise_level))
 
 # Prepare the edges and nodes data for Plotly
 edge_x = []
