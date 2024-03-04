@@ -2,10 +2,10 @@ import pandas as pd
 import streamlit as st
 
 # Hämta demografisk data
-demo_data = pd.read_csv("SHdata.csv")
+demo_data = pd.read_csv("demodata.csv")
 
 # Hämta samarbetsdata
-samarbete_data = pd.read_csv("SamData.csv")
+samarbete_data = pd.read_csv("samarbetsdata.csv")
 
 # Visa information om deltagarna
 st.header("Deltagare")
@@ -24,4 +24,25 @@ st.table(samarbete_data)
 
 # Slutsatser och insikter
 # Presentera slutsatser och insikter baserat på analysen
+
+# Använd följande kod för att skapa en enkel visualisering av nätverket med Gephi:
+
+import gephi
+
+# Skapa en graf från samarbetsdata
+graph = gephi.Graph()
+for i in range(samarbete_data.shape[0]):
+    graph.add_edge(samarbete_data["Deltagare 1"][i], samarbete_data["Deltagare 2"][i])
+
+# Ladda ner layoutalgoritm
+layout = gephi.LayoutForceAtlas2(graph)
+
+# Skapa visualisering
+visualisation = gephi.Visualisation(graph, layout)
+
+# Exportera visualisering som PNG-fil
+visualisation.export_png("collaboration_network.png")
+
+# Visa visualiseringen i Streamlit
+st.image("collaboration_network.png")
 
