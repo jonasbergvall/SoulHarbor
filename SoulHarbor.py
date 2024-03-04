@@ -33,19 +33,19 @@ selected_time = st.slider('Select a time step:', min_value=0, max_value=time_ste
 filtered_data = data[data['Time'] == selected_time]
 
 # Create a NetworkX graph from the filtered DataFrame
-G = nx.from_pandas_edgelist(filtered_data, 'Source', 'Target', edge_attr='Weight')
+G = nx.Graph()
+
+# Add edges with weights to the graph
+for index, row in filtered_data.iterrows():
+    source, target, weight = row['Source'], row['Target'], row['Weight']
+    G.add_edge(source, target, weight=weight)
 
 # Set node attributes for interaction frequency
 for node in G.nodes():
-    G.nodes[node]['Weight'] = sum([G[node][neighbor]['Weight'] for neighbor in G.neighbors(node)])
-
-# Set default weight for edges without weight attribute
-for edge, _, edge_data in G.edges(data=True):
-    if 'Weight' not in edge_data:
-        edge_data['Weight'] = 1
+    G.nodes[node]['Weight'] = sum([edge_data['weight'] for neighbor, edge_data in G.edges(node, data=True)])
 
 # Calculate the maximum edge weight
-max_edge_weight = max([edge_data['Weight'] for edge, edge_data in G.edges(data=True)])
+max_edge_weight = max([edge_data['weight'] for edge, edge_data in G.edges(data=True)])
 
 # Create a dictionary of node positions for better visualization
 # Adjust the k parameter based on the edge weights
