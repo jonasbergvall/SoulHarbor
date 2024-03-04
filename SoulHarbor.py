@@ -39,6 +39,11 @@ G = nx.from_pandas_edgelist(filtered_data, 'Source', 'Target', edge_attr='Weight
 for node in G.nodes():
     G.nodes[node]['Weight'] = sum([G[node][neighbor]['Weight'] for neighbor in G.neighbors(node)])
 
+# Set default weight for edges without weight attribute
+for edge, _, edge_data in G.edges(data=True):
+    if 'Weight' not in edge_data:
+        edge_data['Weight'] = 1
+
 # Calculate the maximum edge weight
 max_edge_weight = max([edge_data['Weight'] for edge, edge_data in G.edges(data=True)])
 
