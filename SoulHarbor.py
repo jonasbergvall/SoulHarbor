@@ -1,43 +1,38 @@
-import pandas as pd
-import matplotlib.pyplot as plt
 import streamlit as st
+import pandas as pd
 
-# Hämta demografisk data
-demo_data = pd.read_csv("demodata.csv")
+# Hämta data från CSV-fil
+samarbete_data = pd.read_csv("samarbetsdata.csv", index_col="ID")
 
-# Hämta samarbetsdata
-samarbete_data = pd.read_csv("samarbetsdata.csv")
+# Ange deltagare och ID för visualisering
+deltagare = st.sidebar.selectbox("Välj deltagare", samarbete_data.index)
+id = samarbete_data.loc[deltagare, "ID"]
 
-# Visa information om deltagarna
-st.header("Deltagare")
-st.table(demo_data)
+# Visa information om vald deltagare
+st.header(f"Samarbetsdata för {deltagare} (ID: {id})")
 
-# Visa information om samarbeten
-st.header("Samarbeten")
-st.table(samarbete_data)
+# Skapa matris för visuell representation av samarbeten
+samarbete_matris = samarbete_data.iloc[:, 2:].values
 
-# Visualisera nätverket av samarbeten
-fig, ax = plt.subplots(figsize=(10, 10))
+# Visa matrisen
+st.table(samarbete_matris)
 
-# Noder
-for i in range(samarbete_data.shape[0]):
-    ax.plot(i, i, "o", color="blue")
+# Loopa igenom deltagare och samarbeten
+for i in range(samarbete_matris.shape[0]):
+    for j in range(samarbete_matris.shape[1]):
+        # Visa detaljerad information om samarbete
+        if samarbete_matris[i, j] == 1:
+            st.markdown(f"- Samarbete med {samarbete_data.index[j]}")
 
-# Kanter
-for i in range(samarbete_data.shape[0]):
-    for j in range(i + 1, samarbete_data.shape[0]):
-        if samarbete_data["Samarbete"][i, j] == 1:
-            ax.plot([i, j], [i, j], "-", color="gray")
+# Visa information om eventuella nya samarbeten
+nya_samarbeten = []
+for i in range(samarbete_matris.shape[0]):
+    for j in range(samarbete_matris.shape[1]):
+        if samarbete_matris[i, j] == 1 and samarbete_data.loc[samarbete_data.index[i], f"Samarbete{j+1}"] == 0:
+            nya_samarbeten.append((samarbete_data.index[i], samarbete_data.index[j]))
 
-# Lägg till etiketter
-for i in range(samarbete_data.shape[0]):
-    ax.annotate(samarbete_data["Deltagare"][i], (i, i))
-
-st.pyplot(fig)
-
-# Filtrera och analysera data
-# Använd Streamlits widgetar för att låta användare filtrera och analysera data
-
-# Slutsatser och insikter
-# Presentera slutsatser och insikter baserat på analysen
+if nya_samarbeten:
+    st.header("Nya samarbeten")
+    for samarbeten in nya_samarbeten:
+        st.markdown(f"- {samarbeten[0]} och {samarbeten[1]}")
 
