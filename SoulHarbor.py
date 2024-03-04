@@ -1,10 +1,8 @@
 import streamlit as st
 import pandas as pd
-import plotly.express as px
-import plotly.graph_objects as go
 import networkx as nx
-import gephi
-from gephi.statistics import Modularity
+import pyvis
+import pyvis.network as net
 import random
 
 st.title('SoulHarbor: Collaboration Network Visualization')
@@ -41,86 +39,22 @@ G = nx.from_pandas_edgelist(filtered_data, 'Source', 'Target', edge_attr='Weight
 for node in G.nodes():
     G.nodes[node]['Weight'] = sum([G[node][neighbor]['Weight'] for neighbor in G.neighbors(node)])
 
-# Connect to the Gephi server
-gephi.project.new()
-gephi.project.open("")
+# Create a Pyvis network object
+pyvis_net = net.Network(height="750px", width="100%", directed=False, bgcolor="white", font_color="black")
 
-# Add nodes and edges to the Gephi graph
+# Set the physics layout options
+pyvis_net.barnes_hut()
+
+# Add nodes and edges to the Pyvis network
 for node in G.nodes():
-    gephi.graph.add_node(node)
-    gephi.graph.set_node_label(node, node)
+    pyvis_net.add_node(node, label=node, title=f"{node}\nInteraction Frequency: {G.nodes[node]['Weight']}")
 
 for edge in G.edges():
-    gephi.graph.add_edge(edge[0], edge[1])
-    gephi.graph.set_edge_weight(edge[0], edge[1], G[edge[0]][edge[1]]['Weight'])
+    pyvis_net.add_edge(edge[0], edge[1], value=G[edge[0]][edge[1]]['Weight'])
 
-# Run the ForceAtlas2 layout algorithm
-gephi.layout.run("ForceAtlas 2", time_limit=10000)
+# Update the network layout and display options
+pyvis_net.force_atlas_2based()
+pyvis_net.show_buttons(filter_=["physics"])
 
-# Get the node positions
-node_positions = gephi.graph.get_node_positions()
-
-# Create a dictionary of node positions
-pos = {}
-for node in G.nodes():
-    pos[node] = (node_positions[node][0], node_positions[node][1])
-
-# Close the Gephi server connection
-gephi.project.close()
-
-# Prepare the edges and nodes data for Plotly
-edge_x = []
-edge_y = []
-for edge in G.edges():
-    x0, y0 = pos[edge[0]]
-    x1, y1 = pos[edge[1]]
-    edge_x.append(x0)
-    edge_x.append(x1)
-    edge_x.append(None)
-    edge_y.append(y0)
-    edge_y.append(y1)
-    edge_y.append(None)
-
-node_x = [pos[node][0] for node in G.nodes()]
-node_y = [pos[node][1] for node in G.nodes()]
-
-# Create the Plotly figure for the collaboration network
-fig = go.Figure(
-    data=go.Scatter(
-        x=edge_x,
-        y=edge_y,
-        mode='lines',
-        line=dict(width=0.5, color='#888'),
-        hoverinfo='none'
-    ),
-    layout=go.Layout(
-        title='Collaboration Network',
-        showlegend=False,
-        hovermode='closest',
-        xaxis=dict(visible=False),
-        yaxis=dict(visible=False),
-        margin=dict(t=50, b=50, l=50, r=50),
-        plot_bgcolor='white',
-        paper_bgcolor='white',
-    )
-)
-
-# Add nodes with names to the figure
-fig.add_trace(go.Scatter(
-    x=node_x,
-    y=node_y,
-    mode='markers+text',
-    marker=dict(
-        size=10,
-        color=[G.nodes[node]['Weight'] for node in G.nodes()],
-        colorscale='Viridis',
-        showscale=True,
-        line=dict(width=2, color='white')
-    ),
-    text=[node for node in G.nodes()],
-    textposition='top center',
-    textfont=dict(size=12, color='black')
-))
-
-# Display the figure in the Streamlit app
-st.plotly_chart(fig)
+# Display the Pyvis network in the Streamlit app
+st.pyvis_chart(pyvis_net)
