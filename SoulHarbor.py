@@ -31,7 +31,14 @@ for i in range(samarbete_data.shape[0]):
 dot += "}"
 
 # Generera PNG-bild från Graphviz-kod
-png = gv.render(dot, format='png').pipe(lambda x: x.decode('utf-8'))
+png = gv.render(dot, format='png')
+st.download_button(
+    label="Ladda ned graf",
+    data=png,
+    file_name="graf.png",
+    mime="image/png"
+)
+
 
 # Visa information om samarbeten
 st.markdown(f"- Samarbeten med:")
