@@ -39,8 +39,17 @@ G = nx.from_pandas_edgelist(filtered_data, 'Source', 'Target', edge_attr='Weight
 for node in G.nodes():
     G.nodes[node]['Weight'] = sum([G[node][neighbor]['Weight'] for neighbor in G.neighbors(node)])
 
+# Calculate the maximum edge weight
+max_edge_weight = max([edge_data['Weight'] for edge, edge_data in G.edges(data=True)])
+
 # Create a dictionary of node positions for better visualization
-pos = nx.spring_layout(G, k=0.5, iterations=100)
+# Adjust the k parameter based on the edge weights
+pos = nx.spring_layout(
+    G,
+    k=0.5 / (max_edge_weight ** 0.5),  # Smaller k value for higher edge weights
+    scale=10,
+    iterations=100
+)
 
 # Prepare the edges and nodes data for Plotly
 edge_x = []
