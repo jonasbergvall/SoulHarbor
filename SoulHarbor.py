@@ -42,9 +42,18 @@ for node in G.nodes():
 # Create a dictionary of node positions for better visualization
 pos = nx.spring_layout(G, k=0.5, iterations=100)
 
-# Add random noise to the positions of the nodes
-noise_level = 0.1
+# Define a function to adjust the noise level based on the interaction frequency
+def adjust_noise_level(frequency):
+    max_frequency = 10  # Maximum interaction frequency
+    base_noise_level = 0.1  # Base noise level for the minimum interaction frequency
+    noise_reduction_factor = 0.5  # Factor by which the noise level is reduced for the maximum interaction frequency
+
+    noise_level = base_noise_level - (frequency / max_frequency) * (base_noise_level * noise_reduction_factor)
+    return noise_level
+
+# Add random noise to the positions of the nodes based on their interaction frequency
 for node in G.nodes():
+    noise_level = adjust_noise_level(G.nodes[node]['Weight'])
     pos[node] = (pos[node][0] + random.uniform(-noise_level, noise_level), pos[node][1] + random.uniform(-noise_level, noise_level))
 
 # Prepare the edges and nodes data for Plotly
